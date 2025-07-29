@@ -3,6 +3,7 @@ apply from: '../mavenpush.gradle'
 
 android {
     compileSdk 33
+    namespace "com.yalantis.ucrop"
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 33

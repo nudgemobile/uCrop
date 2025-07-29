@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdk 33
+    namespace "com.yalantis.ucrop.sample"
     defaultConfig {
         applicationId "com.yalantis.ucrop.sample"
         minSdkVersion 14
