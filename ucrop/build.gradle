@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 apply from: '../mavenpush.gradle'
 
 android {
-    compileSdk 33
+    compileSdk 35
     namespace "com.yalantis.ucrop"
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 35
         versionCode 28
         versionName "2.2.10-native"
 
