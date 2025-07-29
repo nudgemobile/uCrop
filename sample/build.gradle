@@ -5,7 +5,7 @@ android {
     namespace "com.yalantis.ucrop.sample"
     defaultConfig {
         applicationId "com.yalantis.ucrop.sample"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode 13
         versionName "1.2.4"
