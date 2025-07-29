@@ -9,6 +9,9 @@ android {
         versionCode 13
         versionName "1.2.4"
     }
+    buildFeatures {
+        buildConfig = true
+    }
     flavorDimensions "default"
     buildTypes {
         release {
