@@ -674,7 +674,6 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
     public void setupViews(Bundle args) {
         settingsView.setVisibility(View.GONE);
-        mStatusBarColor = args.getInt(UCrop.Options.EXTRA_STATUS_BAR_COLOR, ContextCompat.getColor(this, com.yalantis.ucrop.R.color.ucrop_color_statusbar));
         mToolbarColor = args.getInt(UCrop.Options.EXTRA_TOOL_BAR_COLOR, ContextCompat.getColor(this, com.yalantis.ucrop.R.color.ucrop_color_toolbar));
         mToolbarCancelDrawable = args.getInt(UCrop.Options.EXTRA_UCROP_WIDGET_CANCEL_DRAWABLE, com.yalantis.ucrop.R.drawable.ucrop_ic_cross);
         mToolbarCropDrawable = args.getInt(UCrop.Options.EXTRA_UCROP_WIDGET_CROP_DRAWABLE, com.yalantis.ucrop.R.drawable.ucrop_ic_done);
