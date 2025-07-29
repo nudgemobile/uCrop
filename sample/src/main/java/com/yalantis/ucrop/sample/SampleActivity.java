@@ -203,15 +203,15 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
         public void onClick(View v) {
             String destinationFileName = SAMPLE_CROPPED_IMAGE_NAME;
             String mimeType = "image/jpeg";
-            switch (mRadioGroupCompressionSettings.getCheckedRadioButtonId()) {
-                case R.id.radio_png:
-                    mimeType = "image/png";
-                    destinationFileName += ".png";
-                    break;
-                case R.id.radio_jpeg:
-                    mimeType = "image/jpeg";
-                    destinationFileName += ".jpg";
-                    break;
+
+            int radioButtonId = mRadioGroupChooseDestination.getCheckedRadioButtonId();
+            if (radioButtonId == R.id.radio_png) {
+                mimeType = "image/png";
+                destinationFileName += ".png";
+            }
+            else if (radioButtonId == R.id.radio_jpeg) {
+                mimeType = "image/jpeg";
+                destinationFileName += ".jpg";
             }
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -378,19 +378,18 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
                 File directory = null;
 
-                switch (radioGroupDirectory.getCheckedRadioButtonId()) {
-                    case R.id.radio_external_storage_dcim:
-                        directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                        break;
-                    case R.id.radio_external_storage_pictures:
-                        directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                        break;
-                    case R.id.radio_app_external_storage_dcim:
-                        directory = SampleActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM);
-                        break;
-                    case R.id.radio_app_external_storage_pictures:
-                        directory = SampleActivity.this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                        break;
+                int radioButtonId = radioGroupDirectory.getCheckedRadioButtonId();
+                if (radioButtonId == R.id.radio_external_storage_dcim) {
+                    directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                }
+                else if (radioButtonId == R.id.radio_external_storage_pictures) {
+                    directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                }
+                else if (radioButtonId == R.id.radio_app_external_storage_dcim) {
+                    directory = SampleActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM);
+                }
+                else if (radioButtonId == R.id.radio_app_external_storage_pictures) {
+                    directory = SampleActivity.this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 }
 
                 File file = new File(directory, fileName);
@@ -473,13 +472,13 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
     private void startCrop(@NonNull Uri uri) {
         String destinationFileName = SAMPLE_CROPPED_IMAGE_NAME;
-        switch (mRadioGroupCompressionSettings.getCheckedRadioButtonId()) {
-            case R.id.radio_png:
-                destinationFileName += ".png";
-                break;
-            case R.id.radio_jpeg:
-                destinationFileName += ".jpg";
-                break;
+
+        int radioButtonId = mRadioGroupCompressionSettings.getCheckedRadioButtonId();
+        if (radioButtonId == R.id.radio_png) {
+            destinationFileName += ".png";
+        }
+        else if (radioButtonId == R.id.radio_jpeg) {
+            destinationFileName += ".jpg";
         }
 
         if (destinationUri == null) {
@@ -506,27 +505,26 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
      * @return - ucrop builder instance
      */
     private UCrop basisConfig(@NonNull UCrop uCrop) {
-        switch (mRadioGroupAspectRatio.getCheckedRadioButtonId()) {
-            case R.id.radio_origin:
-                uCrop = uCrop.useSourceImageAspectRatio();
-                break;
-            case R.id.radio_square:
-                uCrop = uCrop.withAspectRatio(1, 1);
-                break;
-            case R.id.radio_dynamic:
-                // do nothing
-                break;
-            default:
-                try {
-                    float ratioX = Float.valueOf(mEditTextRatioX.getText().toString().trim());
-                    float ratioY = Float.valueOf(mEditTextRatioY.getText().toString().trim());
-                    if (ratioX > 0 && ratioY > 0) {
-                        uCrop = uCrop.withAspectRatio(ratioX, ratioY);
-                    }
-                } catch (NumberFormatException e) {
-                    Log.i(TAG, String.format("Number please: %s", e.getMessage()));
+        int radioButtonId = mRadioGroupAspectRatio.getCheckedRadioButtonId();
+        if (radioButtonId == R.id.radio_origin) {
+            uCrop = uCrop.useSourceImageAspectRatio();
+        }
+        else if (radioButtonId == R.id.radio_square) {
+            uCrop = uCrop.withAspectRatio(1, 1);
+        }
+        else if (radioButtonId == R.id.radio_dynamic) {
+            // do nothing
+        }
+        else {
+            try {
+                float ratioX = Float.valueOf(mEditTextRatioX.getText().toString().trim());
+                float ratioY = Float.valueOf(mEditTextRatioY.getText().toString().trim());
+                if (ratioX > 0 && ratioY > 0) {
+                    uCrop = uCrop.withAspectRatio(ratioX, ratioY);
                 }
-                break;
+            } catch (NumberFormatException e) {
+                Log.i(TAG, String.format("Number please: %s", e.getMessage()));
+            }
         }
 
         if (mCheckBoxMaxSize.isChecked()) {
@@ -553,15 +551,14 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
     private UCrop advancedConfig(@NonNull UCrop uCrop) {
         UCrop.Options options = new UCrop.Options();
 
-        switch (mRadioGroupCompressionSettings.getCheckedRadioButtonId()) {
-            case R.id.radio_png:
-                options.setCompressionFormat(Bitmap.CompressFormat.PNG);
-                break;
-            case R.id.radio_jpeg:
-            default:
-                options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
-                break;
+        int radioButtonId = mRadioGroupCompressionSettings.getCheckedRadioButtonId();
+        if (radioButtonId == R.id.radio_png) {
+            options.setCompressionFormat(Bitmap.CompressFormat.PNG);
         }
+        else {
+            options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        }
+
         options.setCompressionQuality(mSeekBarQuality.getProgress());
 
         options.setHideBottomControls(mCheckBoxHideBottomControls.isChecked());
