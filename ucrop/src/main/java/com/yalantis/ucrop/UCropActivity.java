@@ -351,12 +351,17 @@ public class UCropActivity extends AppCompatActivity {
             return windowInsets;
         });
 
-        final FrameLayout controlsWrapper = findViewById(R.id.controls_wrapper);
-        ViewCompat.setOnApplyWindowInsetsListener(controlsWrapper, (view, windowInsets) -> {
-            Insets systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-            view.setPadding(systemInsets.left, 0, systemInsets.right, systemInsets.bottom);
-            return windowInsets;
-        });
+        if (mShowBottomControls) {
+            final View footerView = findViewById(R.id.wrapper_footer_scrim);
+            ViewCompat.setOnApplyWindowInsetsListener(footerView, (view, windowInsets) -> {
+                Insets systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+                ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+                layoutParams.height = systemInsets.bottom;
+                view.setLayoutParams(layoutParams);
+                view.requestLayout();
+                return windowInsets;
+            });
+        }
     }
 
     /**
