@@ -2,10 +2,12 @@ package com.yalantis.ucrop;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -51,7 +54,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.transition.AutoTransition;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
@@ -190,6 +195,12 @@ public class UCropActivity extends AppCompatActivity {
         if (mGestureCropImageView != null) {
             mGestureCropImageView.cancelAllAnimations();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        tintStatusBar();
     }
 
     /**
@@ -708,4 +719,44 @@ public class UCropActivity extends AppCompatActivity {
         setResult(UCrop.RESULT_ERROR, new Intent().putExtra(UCrop.EXTRA_ERROR, throwable));
     }
 
+    private void tintStatusBar() {
+        // Non visible activities will not have a window
+        Window window = getWindow();
+        if (window == null) return;
+
+        // Tell the system that the app will handle drawing behind the system bars.
+        WindowCompat.setDecorFitsSystemWindows(window, false);
+
+        WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+
+        boolean isToolBarColorLight = isColorLight(mToolbarColor);
+
+        // Set status bar icons to be dark if the background is light.
+        // This is supported on API 23+
+        insetsController.setAppearanceLightStatusBars(isToolBarColorLight);
+
+        // On API 21 & 22, the icons are always white. If the background is light,
+        // the icons won't be visible. We apply a translucent black scrim to the status
+        // bar to ensure contrast. For all other versions, we make it fully transparent.
+        @ColorInt int statusBarColor;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            @ColorInt int scrimColor = Color.argb(64, 0, 0, 0); // black with 25% alpha
+            if (isToolBarColorLight) {
+                statusBarColor = scrimColor;
+            }
+            else {
+                statusBarColor = Color.TRANSPARENT;
+            }
+        }
+        else {
+            // On API 23+, we can have a fully transparent status bar.
+            statusBarColor = Color.TRANSPARENT;
+        }
+        window.setStatusBarColor(statusBarColor);
+    }
+
+    private boolean isColorLight(@ColorInt int color) {
+        double brightness = (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        return brightness >= 0.7;
+    }
 }
