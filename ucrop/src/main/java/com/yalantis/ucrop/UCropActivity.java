@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -52,6 +53,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.transition.AutoTransition;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
@@ -122,12 +126,15 @@ public class UCropActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ucrop_activity_photobox);
 
         final Intent intent = getIntent();
 
         setupViews(intent);
+        applyWindowInsets();
         setImageData(intent);
         setInitialState();
         addBlockingView();
@@ -327,6 +334,35 @@ public class UCropActivity extends AppCompatActivity {
             setupScaleWidget();
             setupStatesWrapper();
         }
+    }
+
+    private void applyWindowInsets() {
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (view, windowInsets) -> {
+            Insets systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            view.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, 0);
+            return windowInsets;
+        });
+
+        final FrameLayout layout = findViewById(R.id.ucrop_frame);
+        ViewCompat.setOnApplyWindowInsetsListener(layout, (view, windowInsets) -> {
+            Insets systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            int bottomPadding;
+            if (mShowBottomControls) {
+                bottomPadding = 0; // paddding will be handled by bottom controls
+            } else {
+                bottomPadding = systemInsets.bottom;
+            }
+            view.setPadding(systemInsets.left, 0, systemInsets.right, bottomPadding);
+            return windowInsets;
+        });
+
+        final FrameLayout controlsWrapper = findViewById(R.id.controls_wrapper);
+        ViewCompat.setOnApplyWindowInsetsListener(controlsWrapper, (view, windowInsets) -> {
+            Insets systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            view.setPadding(systemInsets.left, 0, systemInsets.right, systemInsets.bottom);
+            return windowInsets;
+        });
     }
 
     /**
